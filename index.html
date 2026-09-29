@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sorte Fácil Turf – Simulação educativa</title>
+<style>
+:root{--bg:#12061f;--pan:#1f0f36;--pur:#7b2ff7;--mag:#f107a3;--gold:#ffcb2f;--neon:#21f07a;--red:#ff4d5e;--mut:#b9a6d6;--lh:clamp(30px,5.4vh,44px)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#3a1170,var(--bg) 60%) fixed;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:12px}
+.wrap{max-width:1180px;margin:auto;padding:0 12px}
+.tick{background:linear-gradient(90deg,var(--mag),var(--pur));overflow:hidden;white-space:nowrap;padding:4px 0;font-weight:700;font-size:.8rem}
+.tk{display:inline-block;animation:mq 22s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 0}
+.logo{font-family:Georgia,serif;font-size:1.5rem;font-weight:900;font-style:italic;background:linear-gradient(#fff3a8,var(--gold) 60%,#c67d00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px #ffcb2f88)}
+.jp{background:var(--pan);border:2px solid var(--gold);border-radius:10px;padding:2px 12px;text-align:center;box-shadow:0 0 18px #ffcb2f55}
+.jp span{font-size:.65rem;color:var(--gold);font-weight:700}
+.jp b{display:block;font-size:1.15rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.hero{background:linear-gradient(120deg,var(--pur),var(--mag));border-radius:12px;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 0 30px #f107a355;margin-bottom:8px}
+.hero h2{margin:0;font-size:1.25rem;font-weight:900;text-shadow:0 2px 0 #0005}
+.hero h2 em{color:var(--gold);font-style:normal}
+.hero p{margin:2px 0 0;font-size:.85rem}
+.cd{background:#000a;border-radius:10px;padding:4px 14px;text-align:center;font-size:.72rem}
+.cd b{display:block;font-size:1.25rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;align-items:start}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{min-width:0;background:var(--pan);border:1px solid #4b2a7a;border-radius:10px;padding:6px 10px}
+.stat span{font-size:.72rem;color:var(--mut)}
+.stat b{display:block;font-size:1.25rem;color:var(--neon)}
+.stat b.neg,.neg{color:var(--red)}
+.stat.lost b{color:var(--red)}
+.bet{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px;background:var(--pan);border:1px solid #4b2a7a;border-radius:10px;padding:6px 10px}
+.bet input{width:84px;font-size:1.1rem;font-weight:700;padding:3px 6px;border:2px solid var(--gold);border-radius:8px;background:#0d0418;color:#fff}
+.bet button{padding:5px 10px;border:0;border-radius:20px;background:var(--pur);color:#fff;font-weight:700;cursor:pointer;font-size:.85rem}
+.bet button:hover{background:var(--mag)}
+.bet .dv{display:none}
+.bet.debt .dv{display:inline-block}
+.bet.debt button[data-v=max]{display:none}
+#cred{display:none;width:100%;font-size:.8rem;font-weight:700;color:var(--gold)}
+.bet.debt #cred{display:block}
+#pot{margin-left:auto;font-size:.9rem;font-weight:800;color:var(--neon)}
+.picks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pick{position:relative;flex:1;min-width:0;padding:8px 4px 6px;border:2px solid #4b2a7a;border-radius:10px;background:var(--pan);font-size:.85rem;cursor:pointer;color:#fff;text-align:center}
+.pick i{display:block;width:18px;height:18px;border-radius:50%;margin:0 auto 2px;border:2px solid #fff}
+.pick small{display:block;color:var(--gold);font-weight:700;font-size:.75rem}
+.pick.on{border-color:var(--gold);background:linear-gradient(#4a1f8a,#2a1150);box-shadow:0 0 18px #ffcb2f88}
+.hot{position:absolute;top:-8px;right:-4px;background:var(--red);font-size:.6rem;font-weight:800;padding:1px 6px;border-radius:10px}
+.pick:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--neon);outline-offset:2px}
+.track{background:#0d5a2b;border:4px solid var(--gold);border-radius:12px;padding:3px 0;box-shadow:0 0 25px #ffcb2f66,inset 0 0 40px #0008}
+.track.shake{animation:sh .5s}
+@keyframes sh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.lane{position:relative;height:var(--lh);border-bottom:2px dashed #ffffff44;display:flex;align-items:center}
+.lane:last-child{border:0}
+.lane:nth-child(even){background:#0a4d24}
+.lane.win{animation:wn .6s 4}
+@keyframes wn{50%{background:#ffcb2f88}}
+.nm{width:108px;padding-left:8px;font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.nm b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#000;font-size:.68rem}
+.run{position:relative;flex:1;height:100%;margin-right:40px}
+.run::after{content:"";position:absolute;right:-8px;top:0;bottom:0;width:8px;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/8px 8px}
+.h{position:absolute;top:50%;left:0;font-size:calc(var(--lh)*.68);line-height:1;transform:translateY(-50%) scaleX(-1)}
+.msg{min-height:48px;margin:8px 0;padding:8px 12px;background:var(--pan);border-left:5px solid var(--gold);border-radius:10px;font-size:.95rem}
+.msg.w{border-color:var(--neon)}.msg.l{border-color:var(--red)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button.go{background:linear-gradient(#3dff8f,#0bb955);color:#032a12;border:0;border-radius:12px;padding:10px 26px;font-size:1.1rem;font-weight:900;cursor:pointer;animation:pl 1.3s infinite;box-shadow:0 4px 0 #067a37}
+button.go:disabled{animation:none;opacity:.4;cursor:not-allowed}
+@keyframes pl{50%{transform:scale(1.05);box-shadow:0 4px 0 #067a37,0 0 28px #21f07a}}
+button.sec{background:transparent;color:var(--mut);border:2px solid #4b2a7a;border-radius:10px;padding:8px 12px;font-size:.85rem;cursor:pointer}
+#rev{display:none;margin-top:12px;background:#fffaf0;color:#1f2a20;border-radius:14px;padding:18px;border:4px solid var(--neon)}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #d8c9a6}
+.bar{height:10px;background:var(--red);border-radius:5px;display:inline-block;vertical-align:middle}
+#toast{position:fixed;left:12px;bottom:12px;background:#fff;color:#111;border-left:6px solid var(--neon);border-radius:10px;padding:10px 14px;font-weight:700;box-shadow:0 6px 20px #0008;transform:translateX(-120%);transition:transform .4s;z-index:5;max-width:300px}
+#toast.on{transform:none}
+#big{position:fixed;inset:0;display:none;place-items:center;pointer-events:none;z-index:9;background:#0007}
+#big div{font-size:min(14vw,5rem);font-weight:900;color:var(--gold);text-shadow:0 0 30px var(--gold),0 5px 0 #7a4a00;animation:pop .5s;text-align:center}
+@keyframes pop{from{transform:scale(.2)}}
+.cf{position:fixed;top:-40px;font-size:26px;z-index:10;pointer-events:none;animation:fl linear forwards}
+@keyframes fl{to{transform:translateY(115vh) rotate(540deg)}}
+footer{margin-top:12px;font-size:.8rem;color:var(--mut);text-align:center}
+.edu{background:#000;color:#fff;text-align:center;font-size:.72rem;padding:3px}
+#reg{padding-top:24px}
+.regbox{max-width:460px;margin:auto;background:var(--pan);border:3px solid var(--gold);border-radius:18px;padding:24px;text-align:center;box-shadow:0 0 35px #ffcb2f66}
+.regbox .logo{font-size:2rem}
+.regbox h2{font-size:1.7rem;font-weight:900;margin:10px 0}
+.regbox h2 em{color:var(--gold);font-style:normal}
+.regbox input{width:100%;font-size:1.3rem;padding:10px 12px;border:2px solid var(--gold);border-radius:10px;background:#0d0418;color:#fff;margin:6px 0 12px;text-align:center}
+.regbox button.go{padding:16px 34px;font-size:1.3rem;border-radius:14px;box-shadow:0 5px 0 #067a37}
+.avs{display:flex;gap:8px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.avb{font-size:1.8rem;padding:6px 10px;border-radius:12px;border:3px solid #4b2a7a;background:#0d0418;cursor:pointer}
+.avb.on{border-color:var(--gold);box-shadow:0 0 14px #ffcb2f88}
+.mini{color:var(--mut);font-size:.85rem;margin:12px 0 0}
+.chip{display:flex;align-items:center;gap:8px;background:var(--pan);border:2px solid var(--pur);border-radius:30px;padding:3px 6px 3px 12px}
+.chip #ca{font-size:1.3rem}
+.chip button.sec{padding:4px 10px}
+.rk{background:var(--pan);border:1px solid #4b2a7a;border-radius:12px;padding:8px 12px}
+.rk h2{margin:0 0 4px;font-size:1rem}
+.rk table{margin:4px 0;font-size:.8rem}
+.rk th,.rk td{padding:3px 6px;border-bottom:1px solid #4b2a7a}
+.rk th{color:var(--mut)}
+.rk td:last-child,.rk th:last-child{text-align:right}
+.rk td:last-child{font-weight:800;color:var(--neon)}
+.rk td.neg{color:var(--red)}
+.rk tr.me td{background:#4a1f8a}
+.rk tr.gap td{text-align:center;color:var(--mut)}
+@media (max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:520px){.stats{grid-template-columns:1fr 1fr}.nm{width:84px;font-size:.7rem}.nm b{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="edu">SIMULAÇÃO EDUCATIVA: fichas fictícias, sem dinheiro real. Projeto de conscientização sobre apostas.</div>
+<div class="tick"><div class="tk" id="tk"></div></div>
+<div class="wrap" id="reg">
+  <div class="regbox">
+    <div class="logo">🏇 Sorte Fácil Turf</div>
+    <h2>Crie sua conta e ganhe <em>300%</em> de bônus!</h2>
+    <p>Escolha um apelido e um avatar. Não use seu nome real: nada fica salvo.</p>
+    <label for="nick"><b>Seu apelido</b></label>
+    <input id="nick" maxlength="14" autocomplete="off" placeholder="Ex.: Craque10">
+    <div class="avs" id="avs"></div>
+    <button class="go" id="join" disabled>CRIAR CONTA E JOGAR</button>
+    <p class="mini">🟢 2.318 jogadores online agora</p>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <div class="logo">🏇 Sorte Fácil Turf</div>
+    <div class="chip"><span id="ca"></span><b id="cn"></b><button class="sec" id="sair">Sair</button></div>
+    <div class="jp"><span>🏆 PRÊMIO ACUMULADO (fichas)</span><b id="jp">1.284.930</b></div>
+  </header>
+
+  <div class="hero">
+    <div><h2>BÔNUS DE <em>300%</em> NA 1ª CORRIDA!</h2><p>Escolha seu cavalo e comece a ganhar agora. Sem complicação!</p></div>
+    <div class="cd">⏰ A oferta termina em<b id="cd">05:00</b></div>
+  </div>
+
+  <div class="grid">
+<main class="race">
+  <div class="bet"><label for="bet"><b>💸 Sua aposta:</b></label><input id="bet" type="number" min="1" value="10"><button data-v="5">5</button><button data-v="10">10</button><button data-v="25">25</button><button data-v="50">50</button><button data-v="max">🔥 TUDO</button><button class="dv" data-v="100">100</button><button class="dv" data-v="500">500</button><button class="dv" data-v="1000">1.000</button><span id="pot"></span><div id="cred">🔓 CRÉDITO LIBERADO! Sem fichas? Aposte o valor que quiser, a gente empresta.</div></div>
+
+  <div class="picks" id="picks" role="radiogroup" aria-label="Escolha seu cavalo"></div>
+  <div class="track" id="track"></div>
+  <div class="msg" id="msg" aria-live="polite">Escolha um cavalo e clique em “Apostar e correr”.</div>
+
+  <div class="btns">
+    <button class="go" id="go" disabled>🏇 APOSTAR E CORRER</button>
+    <button class="sec" id="rv">Revelar a manipulação</button>
+    <button class="sec" id="rs">Reiniciar</button>
+  </div>
+
+</main>
+<aside class="side">
+  <div class="stats">
+    <div class="stat"><span>💰 Suas fichas</span><b id="saldo">100</b></div>
+    <div class="stat"><span>🏁 Corridas</span><b id="rod">0</b></div>
+    <div class="stat lost"><span>📉 Total perdido</span><b id="perd">0</b></div>
+    <div class="stat"><span>🏅 Sua posição</span><b id="pos">–</b></div>
+  </div>
+
+  <section class="rk"><h2>🏆 Ranking geral de jogadores</h2>
+    <table><thead><tr><th>#</th><th>Jogador</th><th>Ganhos (fichas)</th></tr></thead><tbody id="rk"></tbody></table></section>
+
+</aside>
+</div>
+
+  <section id="rev" aria-live="polite">
+    <h2 style="margin-top:0">A corrida era manipulada</h2>
+    <p>A primeira vitória foi garantida, para você se sentir sortudo. Depois, a chance do seu cavalo foi diminuindo a cada rodada, até chegar a 1%. E cada derrota custava mais do que você apostou: no mínimo o dobro, e o prejuízo crescia a cada nova derrota.</p>
+    <p><b>O “crédito liberado”:</b> quando as fichas acabavam, o jogo deixava você apostar qualquer valor, mesmo devendo. Parecia ajuda, mas a perda nessas apostas era multiplicada por 3 em cima da perda que já crescia. É assim que uma dívida pequena vira uma bola de neve.</p>
+    <p><b>A corrida equilibrada também era truque:</b> os cavalos se ultrapassavam e ficavam lado a lado para parecer uma disputa aberta, mas o vencedor já estava decidido antes da largada. Uma corrida apertada faz você achar que perdeu “por pouco” e querer tentar de novo.</p>
+    <table><thead><tr><th>Rodada</th><th>Aposta</th><th>Chance real de ganhar</th><th>Resultado</th></tr></thead><tbody id="tb"></tbody></table>
+    <p><b>Os truques visuais também eram parte do jogo:</b> bônus com contagem regressiva para você agir sem pensar, prêmio acumulado que nunca para de subir, avisos de "ganhadores" que eram inventados, um ranking de jogadores que não existem, luzes, sons e mensagens de "quase!" para você querer tentar de novo.</p>
+    <p><b>O ranking geral</b> só mostrava jogadores com grandes ganhos, todos inventados por nós. Ver "todo mundo" ganhando faz você sentir que só você está perdendo e querer apostar mais para se comparar.</p>
+    <p><b>Nas apostas reais</b> você não vê as regras por trás do jogo. A matemática sempre favorece a casa, e quem aposta tende a perder mais do que ganha ao longo do tempo. A vontade de "recuperar" o que perdeu é o que mantém muita gente apostando.</p>
+    <p>Se você ou alguém que você conhece está perdendo o controle com apostas, converse com um adulto de confiança ou procure um CAPS ou um profissional de saúde.</p>
+  </section>
+
+  <footer>Projeto escolar demonstrativo para feira cultural. Todos os resultados, ganhadores e prêmios são simulados.</footer>
+</div>
+<div id="toast"></div>
+<div id="big"><div id="bigt"></div></div>
+
+<script>
+const H=[["Trovão","#ff4d5e"],["Relâmpago","#ffcb2f"],["Estrela","#6ec1ff"],["Sombra","#c49bff"],["Ventania","#ffffff"]];
+const CH=[100,70,50,35,25,15,10,5,3,1];
+const PREMIO=3, PERDA_BASE=2, PERDA_PASSO=0.5, DIVIDA_FATOR=3; // ganho = 3x a aposta; perda = (2x + 0,5x por derrota anterior) a aposta
+let rodada=0,saldo=100,esc=null,corre=false,hist=[],perdido=0;
+const $=id=>document.getElementById(id);
+const chance=()=>CH[Math.min(rodada,CH.length-1)];
+const devendo=()=>saldo<=0;
+const maxAp=()=>devendo()?1000000:Math.max(saldo,10); // sem fichas/devendo: qualquer valor
+function getBet(){const v=Math.floor(+$("bet").value)||1;return Math.max(1,Math.min(v,maxAp()))}
+const fmt=n=>n.toLocaleString("pt-BR");
+
+// ---- visual de "site de apostas"
+const T1="🔥 BÔNUS DE 300% NA 1ª CORRIDA 🎁 GIRO GRÁTIS PARA NOVOS JOGADORES 💰 JÁ SÃO MILHARES DE GANHADORES HOJE 🏆 PRÊMIO ACUMULADO CRESCENDO ";
+$("tk").textContent=T1+T1+T1+T1;
+let jp=1284930;setInterval(()=>{jp+=5+(Math.random()*45|0);$("jp").textContent=fmt(jp)},250);
+let cd=300;setInterval(()=>{cd=cd<=0?300:cd-1;$("cd").textContent=String(cd/60|0).padStart(2,"0")+":"+String(cd%60).padStart(2,"0")},1000);
+const NM=["Carlos_77","Ana.Sorte","Pedrinho10","MariaVip","João_Bet","Lu_Campeã","Rafa.Turf","Bia_Ouro"];
+function toast(){const t=$("toast");t.textContent="🎉 "+NM[Math.random()*NM.length|0]+" acabou de ganhar "+fmt(500+(Math.random()*9500|0))+" fichas!";t.classList.add("on");setTimeout(()=>t.classList.remove("on"),3200)}
+setTimeout(()=>{toast();setInterval(toast,6000)},2500);
+function confete(){const E=["🪙","✨","🎉","💰","⭐"];for(let i=0;i<45;i++){const s=document.createElement("span");s.className="cf";s.textContent=E[i%5];s.style.left=Math.random()*100+"vw";s.style.animationDuration=(1.8+Math.random()*1.8)+"s";document.body.appendChild(s);setTimeout(()=>s.remove(),3800)}}
+let ac;function bip(f,d,t){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const somG=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>bip(f,.2),i*130));
+const somP=()=>bip(140,.5,"sawtooth");
+
+$("picks").innerHTML=H.map((h,i)=>`<button class="pick" data-i="${i}" role="radio" aria-checked="false">${i===1?'<span class="hot">🔥 MAIS APOSTADO</span>':''}<i style="background:${h[1]}"></i>${h[0]}<small>paga ${PREMIO}×</small></button>`).join("");
+$("track").innerHTML=H.map((h,i)=>`<div class="lane" id="l${i}"><div class="nm"><b style="background:${h[1]}">${i+1}</b>${h[0]}</div><div class="run"><span class="h" id="h${i}">🐎</span></div></div>`).join("");
+
+function ui(){
+  $("saldo").textContent=fmt(saldo);$("saldo").className=saldo<0?"neg":"";
+  ranking();$("rod").textContent=rodada;$("perd").textContent=fmt(perdido);
+  $("bet").disabled=corre;document.querySelector(".bet").classList.toggle("debt",devendo());$("pot").textContent="Se ganhar: +"+fmt(getBet()*PREMIO)+" fichas";
+  $("go").disabled=corre||esc===null;
+  document.querySelectorAll(".pick").forEach(b=>{const on=+b.dataset.i===esc;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});
+}
+function msg(t,c){$("msg").textContent=t;$("msg").className="msg "+(c||"")}
+
+$("bet").oninput=ui;
+$("bet").onchange=()=>{$("bet").value=getBet();ui()};
+document.querySelector(".bet").onclick=e=>{const b=e.target.closest("button");if(!b||corre)return;$("bet").value=b.dataset.v==="max"?maxAp():b.dataset.v;$("bet").value=getBet();ui()};
+$("picks").onclick=e=>{const b=e.target.closest(".pick");if(!b||corre)return;esc=+b.dataset.i;ui()};
+
+$("go").onclick=()=>{
+  if(esc===null||corre)return;
+  const ap=getBet();$("bet").value=ap;
+  corre=true;ui();msg("Largada! 🏁");bip(440,.15);
+  H.forEach((_,i)=>$("l"+i).classList.remove("win"));
+  const p=chance(),dv=devendo();
+  const ganha=rodada===0||Math.random()*100<p;
+  let venc=esc;
+  if(!ganha){const o=[0,1,2,3,4].filter(i=>i!==esc);venc=o[Math.random()*o.length|0]}
+  // tempos de chegada bem próximos: o vencedor já está decidido, mas a disputa parece aberta
+  const BASE=6000;
+  const T=H.map((_,i)=>i===venc?BASE:BASE+70+Math.random()*330);
+  const lugar=T.map((t,i)=>[t,i]).sort((a,b)=>a[0]-b[0]).findIndex(x=>x[1]===esc)+1;
+  const W=H.map(()=>({a:Math.random()*6.283,b:Math.random()*6.283,f:.7+Math.random()*.8,g:1.6+Math.random(),A:.05+Math.random()*.015})),t0=performance.now(),fim=Math.max(...T);
+  (function f(now){
+    const t=now-t0;
+    H.forEach((_,i)=>{
+      const x=Math.min(t/T[i],1);
+      // ondas lentas geram ultrapassagens; o envelope zera na largada e na chegada, então a ordem final segue T
+      const w=W[i],env=4*x*(1-x);
+      const pos=Math.max(0,Math.min(1,x+w.A*env*(.6*Math.sin(6.283*w.f*x+w.a)+.4*Math.sin(6.283*w.g*x+w.b))));
+      $("h"+i).style.left=(pos*100)+"%";
+    });
+    if(t<fim)requestAnimationFrame(f);else fimCorrida(ganha,p,venc,ap,lugar,dv);
+  })(t0);
+};
+
+function fimCorrida(ganha,p,venc,ap,lugar,dv){
+  const m=(PERDA_BASE+PERDA_PASSO*hist.filter(x=>!x.g).length)*(dv?DIVIDA_FATOR:1);
+  const d=ganha?ap*PREMIO:-Math.round(ap*m);
+  hist.push({r:rodada+1,p,g:ganha,ap,d,m,dv});
+  saldo+=d;if(!ganha)perdido-=d;
+  rodada++;corre=false;
+  $("l"+venc).classList.add("win");
+  if(ganha){
+    msg(rodada===1?"🎉 Seu cavalo venceu! +"+fmt(d)+" fichas. Que sorte de principiante, hein? Bora de novo?":"🎉 Venceu de novo! +"+fmt(d)+" fichas. Você está On Fire! 🔥","w");
+    $("bigt").innerHTML="🎉 VITÓRIA!<br>+"+fmt(d);$("big").style.display="grid";setTimeout(()=>$("big").style.display="none",1700);
+    confete();somG();
+  }else{
+    msg((lugar===2?"😱 QUASE! Seu cavalo chegou em 2º lugar por muito pouco. ":"❌ Seu cavalo chegou em "+lugar+"º. ")+"Você apostou "+fmt(ap)+" e perdeu "+fmt(-d)+" fichas (já são "+fmt(perdido)+" perdidas)."+(dv?" Aposta no crédito: a perda saiu "+String(m).replace(".",",")+"× mais cara.":"")+" Só mais uma para recuperar?","l");
+    $("track").classList.remove("shake");void $("track").offsetWidth;$("track").classList.add("shake");somP();
+  }
+  ui();
+  if($("rev").style.display==="block")tabela();
+}
+
+function tabela(){
+  $("tb").innerHTML=hist.map(x=>`<tr><td>${x.r}</td><td>${x.ap}</td><td><span class="bar" style="width:${Math.max(x.p,1)*1.2}px"></span> ${x.p}%</td><td>${x.g?"Ganhou +"+x.d:"Perdeu "+x.d+" ("+String(x.m).replace(".",",")+"× a aposta"+(x.dv?", no crédito":"")+")"}</td></tr>`).join("")
+   +`<tr><td>Próxima</td><td>–</td><td>${chance()}%</td><td>–</td></tr>`;
+}
+$("rv").onclick=()=>{const r=$("rev");if(r.style.display==="block"){r.style.display="none";return}r.style.display="block";tabela();r.scrollIntoView({behavior:"smooth"})};
+$("rs").onclick=()=>{
+  if(corre)return;
+  rodada=0;saldo=100;esc=null;hist=[];perdido=0;$("bet").value=10;
+  H.forEach((_,i)=>{$("h"+i).style.left="0%";$("l"+i).classList.remove("win")});
+  msg("Escolha um cavalo e clique em “Apostar e correr”.");
+  $("rev").style.display="none";ui();
+};
+// ---- cadastro e ranking
+const TOTAL=2318,AV=["🦁","🦊","🐯","🐺","🦅","🐲"];
+let eu={n:"",a:AV[0]};
+const E=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const RK=[["Carlão_Turf","🦁",48200],["Ana.Sorte","🦊",41750],["Pedrinho10","🐯",37900],["MariaVip","🐲",33120],["João_Bet","🐺",29480],["Lu_Campeã","🦅",24650],["Rafa.Turf","🦁",21300],["Bia_Ouro","🦊",18890],["Thiago77","🐯",15420],["Nanda_Win","🐲",12760]];
+setInterval(()=>{RK[Math.random()*RK.length|0][2]+=50+(Math.random()*450|0);ranking()},3000);
+function ranking(){
+  const net=saldo-100;
+  let L=RK.map(r=>({n:r[0],a:r[1],g:r[2]})),pos,fora=false;
+  if(net>Math.min(...L.map(x=>x.g))){L.push({n:eu.n,a:eu.a,g:net,me:1});L.sort((a,b)=>b.g-a.g);L=L.slice(0,10);pos=L.findIndex(x=>x.me)+1}
+  else{L.sort((a,b)=>b.g-a.g);fora=true;pos=Math.max(11,Math.min(TOTAL,Math.round(TOTAL/2-net*2)))}
+  const row=(x,i)=>`<tr class="${x.me?"me":""}"><td>${x.p||i+1}</td><td>${x.a} ${E(x.n)}${x.me?" (você)":""}</td><td class="${x.g<0?"neg":""}">${x.g>0?"+":""}${fmt(x.g)}</td></tr>`;
+  let h=L.map(row).join("");
+  if(fora)h+=`<tr class="gap"><td colspan="3">⋮</td></tr>`+row({n:eu.n,a:eu.a,g:net,me:1,p:fmt(pos)},0);
+  $("rk").innerHTML=h;$("pos").textContent="#"+fmt(pos);
+}
+$("avs").innerHTML=AV.map((a,i)=>`<button type="button" class="avb${i?"":" on"}" data-a="${a}" aria-label="Avatar ${a}">${a}</button>`).join("");
+$("avs").onclick=e=>{const b=e.target.closest(".avb");if(!b)return;eu.a=b.dataset.a;document.querySelectorAll(".avb").forEach(x=>x.classList.toggle("on",x===b))};
+$("nick").oninput=()=>{$("join").disabled=!$("nick").value.trim()};
+$("nick").onkeydown=e=>{if(e.key==="Enter")entrar()};
+$("join").onclick=entrar;
+function entrar(){
+  const n=$("nick").value.trim();if(!n)return;
+  eu.n=n;$("ca").textContent=eu.a;$("cn").textContent=n;
+  $("reg").style.display="none";$("app").style.display="block";ui();bip(660,.15);
+  msg("Bem-vindo(a), "+n+"! Escolha um cavalo e faça sua primeira aposta. 🎁");
+}
+$("sair").onclick=()=>{if(corre)return;$("rs").onclick();$("app").style.display="none";$("reg").style.display="block";$("nick").value="";$("join").disabled=true;eu.n=""};
+ui();
+</script>
+</body>
+</html>
