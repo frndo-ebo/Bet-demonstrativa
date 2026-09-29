@@ -228,12 +228,12 @@ function cavalo(h,i){
 </svg>`}
 const CH=[100,70,50,35,25,15,10,5,3,1];
 const PREMIO=3, PERDA_BASE=1.5, PERDA_PASSO=0.25, PERDA_MAX=3, DIVIDA_FATOR=1.5; // ganho = 3x a aposta; perda = 1,5x (+0,25x por derrota anterior, máx. 3x); no crédito ×1,5
-const MAX_AP=50, MAX_AP_CRED=100, EMPRESTIMO=100, DEVE=150, DERR_OFERTA=3;
+const MAX_AP_CRED=100, EMPRESTIMO=100, DEVE=150, DERR_OFERTA=3;
 let rodada=0,saldo=100,esc=null,corre=false,hist=[],perdido=0,seq=0,proxOferta=DERR_OFERTA,forcadas=0,emprestado=0,deve=0;
 const $=id=>document.getElementById(id);
 const chance=()=>CH[Math.min(rodada,CH.length-1)];
 const devendo=()=>saldo<=0;
-const maxAp=()=>devendo()?MAX_AP_CRED:Math.min(MAX_AP,Math.max(saldo,10)); // limite de aposta
+const maxAp=()=>devendo()?MAX_AP_CRED:saldo; // com fichas: até tudo o que tem; sem fichas (crédito): até MAX_AP_CRED
 function getBet(){const v=Math.floor(+$("bet").value)||1;return Math.max(1,Math.min(v,maxAp()))}
 const fmt=n=>n.toLocaleString("pt-BR");
 
