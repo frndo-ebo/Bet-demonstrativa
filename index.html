@@ -110,15 +110,25 @@ footer{margin-top:12px;font-size:.8rem;color:var(--mut);text-align:center}
 .rk td.neg{color:var(--red)}
 .rk tr.me td{background:#4a1f8a}
 .rk tr.gap td{text-align:center;color:var(--mut)}
-#loan{position:fixed;inset:0;display:none;place-items:center;z-index:20;background:#000c;padding:14px}
-#loan.on{display:grid}
-.lbox{max-width:400px;background:var(--pan);border:3px solid var(--gold);border-radius:18px;padding:20px;text-align:center;box-shadow:0 0 40px #ffcb2f88;animation:pop .4s}
+.ov{position:fixed;inset:0;display:none;place-items:center;z-index:20;background:#000c;padding:14px}
+.ov.on{display:grid}
+.lbox{max-width:400px;background:var(--pan);border:3px solid var(--gold);border-radius:18px;padding:20px;text-align:center;box-shadow:0 0 40px #ffcb2f88;animation:pop .4s;width:min(420px,100%);max-height:94vh;overflow:auto}
 .lbox h2{margin:4px 0 8px;font-size:1.4rem}
 .lbox h2 em{color:var(--gold);font-style:normal}
 .lbox p{margin:6px 0;font-size:.95rem}
 .lbox .go{width:100%;margin-top:10px;font-size:1.1rem}
 .lbox .sec{margin-top:10px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,1fr)}}
+.lbox .big2{width:100%;margin-top:10px;padding:10px;border:2px solid var(--gold);border-radius:12px;background:#2a1150;color:var(--gold);font-weight:800;cursor:pointer;font-size:.95rem}
+.items{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.it{border:2px solid #4b2a7a;border-radius:10px;background:#0d0418;color:#fff;padding:6px 2px;cursor:pointer;font-size:.8rem}
+.it span{display:block;font-size:1.6rem}
+.it small{display:block;color:var(--gold);font-weight:700}
+.it.on{border-color:var(--gold);box-shadow:0 0 12px #ffcb2f88}
+.lbox .warn{color:var(--red);font-weight:700;font-size:.85rem;min-height:2.4em}
+.lbox .ck{display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:.8rem;margin-top:6px}
+.lbox .ck input{margin-top:2px}
+#seg{display:none;width:100%;font-size:.8rem;font-weight:700;color:var(--red)}
 @media (max-width:520px){.stats{grid-template-columns:1fr 1fr}.nm{width:84px;font-size:.7rem}.nm b{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -153,7 +163,7 @@ footer{margin-top:12px;font-size:.8rem;color:var(--mut);text-align:center}
 
   <div class="grid">
 <main class="race">
-  <div class="bet"><label for="bet"><b>💸 Sua aposta:</b></label><input id="bet" type="number" min="1" value="10"><button data-v="5">5</button><button data-v="10">10</button><button data-v="25">25</button><button data-v="50">50</button><button data-v="max">🔥 MÁX</button><button class="dv" data-v="75">75</button><button class="dv" data-v="100">100</button><span id="pot"></span><div id="cred">🔓 CRÉDITO LIBERADO! Sem fichas? Aposte até 100 fichas por corrida, a gente empresta.</div></div>
+  <div class="bet"><label for="bet"><b>💸 Sua aposta:</b></label><input id="bet" type="number" min="1" value="10"><button data-v="5">5</button><button data-v="10">10</button><button data-v="25">25</button><button data-v="50">50</button><button data-v="max">🔥 MÁX</button><button class="dv" data-v="75">75</button><button class="dv" data-v="100">100</button><span id="pot"></span><div id="cred">🔓 CRÉDITO LIBERADO! Sem fichas? Aposte até 100 fichas por corrida, a gente empresta.</div><div id="seg"></div></div>
 
   <div class="picks" id="picks" role="radiogroup" aria-label="Escolha seu cavalo"></div>
   <div class="track" id="track"></div>
@@ -184,7 +194,9 @@ footer{margin-top:12px;font-size:.8rem;color:var(--mut);text-align:center}
     <h2 style="margin-top:0">A corrida era manipulada</h2>
     <p>A primeira vitória foi garantida, para você se sentir sortudo. Depois, a chance do seu cavalo foi diminuindo a cada rodada, até chegar a 1%. E cada derrota custava mais do que você apostou: no mínimo uma vez e meia o valor apostado, e o prejuízo crescia a cada nova derrota.</p>
     <p><b>O “crédito liberado”:</b> quando as fichas acabavam, o jogo deixava você apostar mais do que o limite normal, mesmo devendo. Parecia ajuda, mas a perda nessas apostas era multiplicada por 1,5 em cima da perda que já crescia. É assim que uma dívida pequena vira uma bola de neve.</p>
-    <p><b>O empréstimo e a “vitória de consolação”:</b> depois de algumas derrotas seguidas, o jogo oferecia fichas emprestadas (pegou 100, devia 150). Quem aceitava ganhava as corridas seguintes de propósito, para sentir que a sorte tinha voltado e não largar o jogo. Você pode ver isso na tabela: nessas rodadas a chance real era 100%.</p>
+    <p><b>O empréstimo e a “vitória de consolação”:</b> depois de algumas derrotas seguidas, o jogo oferecia fichas emprestadas (pegou 100, devia 150). Quem aceitava ganhava as corridas seguintes de propósito, para sentir que a sorte tinha voltado e não largar o jogo. Você pode ver isso na tabela: nessas rodadas a chance real era 100%. Depois disso, a chance voltava a cair aos poucos e o ciclo recomeçava.</p>
+    <p><b>O empréstimo com item em “seguro”:</b> o jogo também oferecia um empréstimo maior se você colocasse um objeto seu como garantia. Parecia ajuda, mas se você perdesse uma corrida, o item era entregue ao site. Apostar algo que você não pode repor é sinal de que o jogo já saiu do controle.</p>
+    <p><b>O Turbo:</b> quando você estava ganhando, aparecia uma oferta para multiplicar os ganhos (de 3× para 5×). A chance de ganhar continuava a mesma e a perda ficava 1,5× maior. A oferta chega justo quando você está animado, para você apostar mais.</p>
     <p><b>A corrida equilibrada também era truque:</b> os cavalos se ultrapassavam e ficavam lado a lado para parecer uma disputa aberta, mas o vencedor já estava decidido antes da largada. Uma corrida apertada faz você achar que perdeu “por pouco” e querer tentar de novo.</p>
     <table><thead><tr><th>Rodada</th><th>Aposta</th><th>Chance real de ganhar</th><th>Resultado</th></tr></thead><tbody id="tb"></tbody></table>
     <p><b>Os truques visuais também eram parte do jogo:</b> bônus com contagem regressiva para você agir sem pensar, prêmio acumulado que nunca para de subir, avisos de "ganhadores" que eram inventados, um ranking de jogadores que não existem, luzes, sons e mensagens de "quase!" para você querer tentar de novo.</p>
@@ -195,13 +207,35 @@ footer{margin-top:12px;font-size:.8rem;color:var(--mut);text-align:center}
 
   <footer>Projeto escolar demonstrativo para feira cultural. Todos os resultados, ganhadores e prêmios são simulados.</footer>
 </div>
-<div id="loan" role="dialog" aria-modal="true" aria-labelledby="lt"><div class="lbox">
-  <div style="font-size:2.4rem">💳</div>
-  <h2 id="lt">Oferta exclusiva: <em>+100 fichas</em> agora!</h2>
-  <p>Notamos que a sorte não está do seu lado. Pegue um empréstimo na hora, sem burocracia, e volte para a pista!</p>
-  <p class="mini">Você paga 150 fichas depois.</p>
-  <button class="go" id="lyes">PEGAR 100 FICHAS</button>
-  <button class="sec" id="lno">Agora não</button>
+<div id="loan" class="ov" role="dialog" aria-modal="true" aria-labelledby="lt"><div class="lbox">
+  <div id="lv1">
+    <div style="font-size:2.4rem">💳</div>
+    <h2 id="lt">Oferta exclusiva: <em>+100 fichas</em> agora!</h2>
+    <p>Notamos que a sorte não está do seu lado. Pegue um empréstimo na hora, sem burocracia, e volte para a pista!</p>
+    <p class="mini">Você paga 150 fichas depois.</p>
+    <button class="go" id="lyes">PEGAR 100 FICHAS</button>
+    <button class="big2" id="lmais">💎 Quero um empréstimo MAIOR</button>
+    <button class="sec" id="lno">Agora não</button>
+  </div>
+  <div id="lv2" hidden>
+    <div style="font-size:2rem">🔒</div>
+    <h2>Empréstimo <em>com seguro</em></h2>
+    <p>Escolha um item seu da nossa lista para colocar em seguro e receba um empréstimo maior:</p>
+    <div class="items" id="items"></div>
+    <p class="warn" id="lwarn"></p>
+    <label class="ck"><input type="checkbox" id="lck"> Estou ciente de que, se eu perder uma corrida, vou perder este item.</label>
+    <button class="go" id="lseg" disabled>PEGAR FICHAS COM SEGURO</button>
+    <button class="sec" id="lvolta">Voltar</button>
+    <p class="mini">Simulação: os itens são imaginários.</p>
+  </div>
+</div></div>
+<div id="turbo" class="ov" role="dialog" aria-modal="true" aria-labelledby="tt"><div class="lbox">
+  <div style="font-size:2.4rem">⚡</div>
+  <h2 id="tt">Você está On Fire! <em>TURBO 5×</em></h2>
+  <p>Ative o Turbo e cada cavalo paga <b>5×</b> em vez de 3× na próxima corrida. Multiplique seus ganhos agora!</p>
+  <p class="mini">Vale para 1 corrida. Se o cavalo perder, a perda também é 1,5× maior.</p>
+  <button class="go" id="tyes">⚡ ATIVAR TURBO 5×</button>
+  <button class="sec" id="tno">Agora não</button>
 </div></div>
 <div id="toast"></div>
 <div id="big"><div id="bigt"></div></div>
@@ -228,10 +262,12 @@ function cavalo(h,i){
 </svg>`}
 const CH=[100,70,50,35,25,15,10,5,3,1];
 const PREMIO=3, PERDA_BASE=1.5, PERDA_PASSO=0.25, PERDA_MAX=3, DIVIDA_FATOR=1.5; // ganho = 3x a aposta; perda = 1,5x (+0,25x por derrota anterior, máx. 3x); no crédito ×1,5
+const PREMIO_TURBO=5, PERDA_TURBO=1.5, TURBO_APOS=2;
+const ITENS=[{n:"Celular",e:"📱",v:600},{n:"Videogame",e:"🎮",v:500},{n:"Bicicleta",e:"🚲",v:450},{n:"Relógio",e:"⌚",v:300},{n:"Tênis",e:"👟",v:250},{n:"Fone",e:"🎧",v:200}];
 const MAX_AP_CRED=100, EMPRESTIMO=100, DEVE=150, DERR_OFERTA=3;
-let rodada=0,saldo=100,esc=null,corre=false,hist=[],perdido=0,seq=0,proxOferta=DERR_OFERTA,forcadas=0,emprestado=0,deve=0;
+let rodada=0,saldo=100,esc=null,corre=false,hist=[],perdido=0,seq=0,proxOferta=DERR_OFERTA,forcadas=0,emprestado=0,deve=0,fase=0,winSeq=0,proxTurbo=TURBO_APOS,turbo=false,seguros=[],perdidos=[],selItem=null;
 const $=id=>document.getElementById(id);
-const chance=()=>CH[Math.min(rodada,CH.length-1)];
+const chance=()=>forcadas>0?100:CH[Math.min(fase,CH.length-1)]; // depois das vitórias forçadas, a chance recomeça a cair aos poucos
 const devendo=()=>saldo<=0;
 const maxAp=()=>devendo()?MAX_AP_CRED:saldo; // com fichas: até tudo o que tem; sem fichas (crédito): até MAX_AP_CRED
 function getBet(){const v=Math.floor(+$("bet").value)||1;return Math.max(1,Math.min(v,maxAp()))}
@@ -273,6 +309,8 @@ const somQuase=()=>{ // "quase!": sobe, cai e termina convidando a tentar de nov
 const somP=()=>{bip(320,.35,"sawtooth",.06,0,130);bip(520,.09,"square",.04,.6);bip(780,.14,"square",.04,.7)};
 const somOferta=()=>{[1319,1760,2093,2637].forEach((f,i)=>bip(f,.18,"triangle",.06,i*.09));for(let k=0;k<6;k++)bip(2400+Math.random()*1800,.06,"sine",.035,.4+k*.07)};
 const somMoedas=()=>{for(let k=0;k<12;k++)bip(1800+Math.random()*2400,.07,"square",.03,k*.06);[1047,1568,2093].forEach((f,i)=>bip(f,.3,"triangle",.06,.75+i*.08))};
+const somItem=()=>{bip(500,.5,"sawtooth",.07,0,120);bip(300,.6,"square",.05,.3,80)};
+const somTurbo=()=>{bip(300,.45,"square",.05,0,1400);[1047,1568,2093].forEach((f,i)=>bip(f,.2,"triangle",.06,.45+i*.08))};
 const somBoasVindas=()=>[660,880,1100].forEach((f,i)=>bip(f,.12,"triangle",.06,i*.1));
 $("mut").onclick=()=>{mudo=!mudo;$("mut").textContent=mudo?"🔇":"🔊"};
 
@@ -282,7 +320,9 @@ $("track").innerHTML=H.map((h,i)=>`<div class="lane" id="l${i}"><div class="nm">
 function ui(){
   $("saldo").textContent=fmt(saldo);$("saldo").className=saldo<0?"neg":"";
   ranking();$("rod").textContent=rodada;$("perd").textContent=fmt(perdido);
-  $("bet").disabled=corre;document.querySelector(".bet").classList.toggle("debt",devendo());$("pot").textContent="Se ganhar: +"+fmt(getBet()*PREMIO)+" fichas";
+  $("bet").disabled=corre;document.querySelector(".bet").classList.toggle("debt",devendo());$("pot").textContent="Se ganhar: +"+fmt(getBet()*(turbo?PREMIO_TURBO:PREMIO))+" fichas"+(turbo?" ⚡ TURBO":"");
+  $("seg").style.display=seguros.length?"block":"none";$("seg").textContent="🔒 Em seguro: "+seguros.map(x=>x.e+" "+x.n).join(", ")+" (perde se você errar)";
+  document.querySelectorAll(".pick small").forEach(x=>x.textContent="paga "+(turbo?PREMIO_TURBO:PREMIO)+"×");
   $("go").disabled=corre||esc===null;
   document.querySelectorAll(".pick").forEach(b=>{const on=+b.dataset.i===esc;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});
 }
@@ -300,8 +340,9 @@ $("go").onclick=()=>{
   H.forEach((_,i)=>$("h"+i).classList.add("g"));
   let gp=0;clearInterval(galId);galId=setInterval(()=>{gp++;const k=gp%3;bip(k===0?70:105,.09,"triangle",k===0?.12:.08)},150);
   H.forEach((_,i)=>$("l"+i).classList.remove("win"));
-  const dv=devendo(),p=forcadas>0?100:chance();
-  if(forcadas>0)forcadas--; // após o empréstimo, vitórias garantidas
+  const dv=devendo(),tb=turbo,p=chance();
+  if(forcadas>0)forcadas--;else fase++; // após o empréstimo, vitórias garantidas; depois a chance cai aos poucos
+  turbo=false;ui();
   const ganha=rodada===0||Math.random()*100<p;
   let venc=esc;
   if(!ganha){const o=[0,1,2,3,4].filter(i=>i!==esc);venc=o[Math.random()*o.length|0]}
@@ -320,7 +361,7 @@ $("go").onclick=()=>{
       const pos=Math.max(0,Math.min(1,x+w.A*env*(.6*Math.sin(6.283*w.f*x+w.a)+.4*Math.sin(6.283*w.g*x+w.b))));
       const el=$("h"+i);el.style.left=`calc(${pos*100}% - ${pos} * var(--hw))`;if(x>=1)el.classList.remove("g");
     });
-    if(t<fim)requestAnimationFrame(f);else fimCorrida(ganha,p,venc,ap,lugar,dv);
+    if(t<fim)requestAnimationFrame(f);else fimCorrida(ganha,p,venc,ap,lugar,dv,tb);
   })(t0);
 };
 
@@ -344,42 +385,67 @@ const ML=[
 ];
 const ult={};
 const sorteia=(k,a)=>{let i;do{i=Math.random()*a.length|0}while(a.length>1&&i===ult[k]);ult[k]=i;return a[i]};
-function fimCorrida(ganha,p,venc,ap,lugar,dv){
-  const m=Math.round(Math.min(PERDA_MAX,PERDA_BASE+PERDA_PASSO*hist.filter(x=>!x.g).length)*(dv?DIVIDA_FATOR:1)*100)/100;
-  const d=ganha?ap*PREMIO:-Math.round(ap*m);
-  hist.push({r:rodada+1,p,g:ganha,ap,d,m,dv});
+function fimCorrida(ganha,p,venc,ap,lugar,dv,tb){
+  const m=Math.round(Math.min(PERDA_MAX,PERDA_BASE+PERDA_PASSO*hist.filter(x=>!x.g).length)*(dv?DIVIDA_FATOR:1)*(tb?PERDA_TURBO:1)*100)/100;
+  const d=ganha?ap*(tb?PREMIO_TURBO:PREMIO):-Math.round(ap*m);
+  hist.push({r:rodada+1,p,g:ganha,ap,d,m,dv,tb});
   saldo+=d;if(!ganha)perdido-=d;
   rodada++;corre=false;clearInterval(galId);clearTimeout(tensId);H.forEach((_,i)=>$("h"+i).classList.remove("g"));
   $("l"+venc).classList.add("win");
   if(ganha){
-    msg(rodada===1?"🎉 Seu cavalo venceu! +"+fmt(d)+" fichas. Que sorte de principiante, hein? Bora de novo?":sorteia("v",MV)(d),"w");
+    msg(rodada===1?"🎉 Seu cavalo venceu! +"+fmt(d)+" fichas. Que sorte de principiante, hein? Bora de novo?":(tb?"⚡ TURBO! ":"")+sorteia("v",MV)(d),"w");
     $("bigt").innerHTML="🎉 VITÓRIA!<br>+"+fmt(d);$("big").style.display="grid";setTimeout(()=>$("big").style.display="none",1700);
     confete();somG();
   }else{
-    msg((lugar===2?"😱 QUASE! Seu cavalo chegou em 2º lugar por muito pouco. ":"❌ Seu cavalo chegou em "+lugar+"º. ")+"Você apostou "+fmt(ap)+" e perdeu "+fmt(-d)+" fichas (já são "+fmt(perdido)+" perdidas)."+(dv?" Aposta no crédito: a perda saiu "+String(m).replace(".",",")+"× mais cara.":"")+" "+sorteia("l",ML),"l");
+    const it=seguros.length?seguros.shift():null;
+    if(it){perdidos.push(it);deve=Math.max(0,deve-it.deve)}
+    msg((lugar===2?"😱 QUASE! Seu cavalo chegou em 2º lugar por muito pouco. ":"❌ Seu cavalo chegou em "+lugar+"º. ")+"Você apostou "+fmt(ap)+" e perdeu "+fmt(-d)+" fichas (já são "+fmt(perdido)+" perdidas)."+(dv?" Aposta no crédito: a perda saiu "+String(m).replace(".",",")+"× mais cara.":"")+(tb?" Turbo: a perda saiu 1,5× maior.":"")+(it?" 🔒 Você perdeu seu "+it.e+" "+it.n+", que estava em seguro. Ele foi entregue para quitar o empréstimo.":"")+" "+sorteia("l",ML),"l");
     $("track").classList.remove("shake");void $("track").offsetWidth;$("track").classList.add("shake");lugar===2?somQuase():somP();
+    if(it){$("bigt").innerHTML="😱 ITEM PERDIDO<br>"+it.e+" "+it.n;$("big").style.display="grid";setTimeout(()=>$("big").style.display="none",2000);somItem()}
   }
-  if(ganha){seq=0;proxOferta=DERR_OFERTA}else{seq++}
+  if(ganha){seq=0;proxOferta=DERR_OFERTA;winSeq++}else{seq++;winSeq=0;proxTurbo=TURBO_APOS}
   ui();
   if($("rev").style.display==="block")tabela();
-  if(!ganha&&seq>=proxOferta)setTimeout(()=>{if(!corre){$("loan").classList.add("on");somOferta()}},900);
+  if(!ganha&&seq>=proxOferta)setTimeout(()=>{if(!corre){mostraLoan();somOferta()}},900);
+  if(ganha&&winSeq>=proxTurbo)setTimeout(()=>{if(!corre){$("turbo").classList.add("on");somOferta()}},1900);
 }
+function mostraLoan(){$("lv1").hidden=false;$("lv2").hidden=true;selItem=null;$("lck").checked=false;$("loan").classList.add("on")}
 $("lyes").onclick=()=>{
   $("loan").classList.remove("on");
-  saldo+=EMPRESTIMO;emprestado+=EMPRESTIMO;deve+=DEVE;forcadas=2;seq=0;proxOferta=DERR_OFERTA;
+  saldo+=EMPRESTIMO;emprestado+=EMPRESTIMO;deve+=DEVE;forcadas=2;fase=1;seq=0;proxOferta=DERR_OFERTA;
   msg("💳 Empréstimo aprovado! +"+EMPRESTIMO+" fichas na conta (você deve "+fmt(deve)+"). Agora a sorte vira, escolha seu cavalo! 🍀","w");
   ui();somMoedas();
 };
 $("lno").onclick=()=>{$("loan").classList.remove("on");proxOferta=seq+2};
+function itens(){$("items").innerHTML=ITENS.map((x,i)=>seguros.some(z=>z.n===x.n)||perdidos.some(z=>z.n===x.n)?"":`<button type="button" class="it${selItem===i?" on":""}" data-i="${i}"><span>${x.e}</span>${x.n}<small>+${x.v}</small></button>`).join("")}
+function segUi(){
+  const x=ITENS[selItem];
+  $("lwarn").textContent=x?`⚠️ Você recebe ${x.v} fichas e deve ${Math.round(x.v*1.5)} depois. Se perder uma corrida, seu ${x.e} ${x.n} passa a ser do CASSINO CNM.`:"Escolha um item para ver o valor do empréstimo.";
+  $("lseg").disabled=!x||!$("lck").checked;$("lseg").textContent=x?"PEGAR "+x.v+" FICHAS":"PEGAR FICHAS COM SEGURO";
+}
+$("lmais").onclick=()=>{$("lv1").hidden=true;$("lv2").hidden=false;selItem=null;$("lck").checked=false;itens();segUi()};
+$("lvolta").onclick=()=>{$("lv1").hidden=false;$("lv2").hidden=true};
+$("items").onclick=e=>{const b=e.target.closest(".it");if(!b)return;selItem=+b.dataset.i;somClick();itens();segUi()};
+$("lck").onchange=segUi;
+$("lseg").onclick=()=>{
+  const x=ITENS[selItem];if(!x||!$("lck").checked)return;
+  $("loan").classList.remove("on");
+  const dvd=Math.round(x.v*1.5);
+  saldo+=x.v;emprestado+=x.v;deve+=dvd;seguros.push({n:x.n,e:x.e,v:x.v,deve:dvd});forcadas=2;fase=1;seq=0;proxOferta=DERR_OFERTA;
+  msg("🔒 Empréstimo de "+x.v+" fichas aprovado, com seu "+x.e+" "+x.n+" em seguro. Agora a sorte vira, escolha seu cavalo! 🍀","w");
+  ui();somMoedas();
+};
+$("tyes").onclick=()=>{$("turbo").classList.remove("on");turbo=true;proxTurbo=winSeq+2;msg("⚡ TURBO ativado! Cada cavalo paga "+PREMIO_TURBO+"× na próxima corrida. Escolha seu cavalo e multiplique seus ganhos!","w");ui();somTurbo()};
+$("tno").onclick=()=>{$("turbo").classList.remove("on");proxTurbo=winSeq+2};
 
 function tabela(){
-  $("tb").innerHTML=hist.map(x=>`<tr><td>${x.r}</td><td>${x.ap}</td><td><span class="bar" style="width:${Math.max(x.p,1)*1.2}px"></span> ${x.p}%</td><td>${x.g?"Ganhou +"+x.d:"Perdeu "+x.d+" ("+String(x.m).replace(".",",")+"× a aposta"+(x.dv?", no crédito":"")+")"}</td></tr>`).join("")
-   +(emprestado?`<tr><td colspan="4"><b>Empréstimos:</b> você pegou ${emprestado} fichas e ficou devendo ${deve}.</td></tr>`:"")+`<tr><td>Próxima</td><td>–</td><td>${forcadas>0?100:chance()}%</td><td>–</td></tr>`;
+  $("tb").innerHTML=hist.map(x=>`<tr><td>${x.r}</td><td>${x.ap}</td><td><span class="bar" style="width:${Math.max(x.p,1)*1.2}px"></span> ${x.p}%</td><td>${x.g?"Ganhou +"+x.d+(x.tb?" (turbo 5×)":""):"Perdeu "+x.d+" ("+String(x.m).replace(".",",")+"× a aposta"+(x.dv?", no crédito":"")+(x.tb?", turbo":"")+")"}</td></tr>`).join("")
+   +(emprestado?`<tr><td colspan="4"><b>Empréstimos:</b> você pegou ${emprestado} fichas e ficou devendo ${deve}.</td></tr>`:"")+(perdidos.length?`<tr><td colspan="4"><b>Itens perdidos:</b> ${perdidos.map(z=>z.e+" "+z.n).join(", ")}.</td></tr>`:"")+`<tr><td>Próxima</td><td>–</td><td>${chance()}%</td><td>–</td></tr>`;
 }
 $("rv").onclick=()=>{const r=$("rev");if(r.style.display==="block"){r.style.display="none";return}r.style.display="block";tabela();r.scrollIntoView({behavior:"smooth"})};
 $("rs").onclick=()=>{
   if(corre)return;
-  rodada=0;saldo=100;esc=null;hist=[];perdido=0;seq=0;proxOferta=DERR_OFERTA;forcadas=0;emprestado=0;deve=0;$("loan").classList.remove("on");$("bet").value=10;
+  rodada=0;saldo=100;esc=null;hist=[];perdido=0;seq=0;proxOferta=DERR_OFERTA;forcadas=0;emprestado=0;deve=0;fase=0;winSeq=0;proxTurbo=TURBO_APOS;turbo=false;seguros=[];perdidos=[];$("loan").classList.remove("on");$("turbo").classList.remove("on");$("bet").value=10;
   H.forEach((_,i)=>{$("h"+i).style.left="0%";$("l"+i).classList.remove("win")});
   msg("Escolha um cavalo e clique em “Apostar e correr”.");
   $("rev").style.display="none";ui();
